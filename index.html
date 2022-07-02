@@ -1,0 +1,70 @@
+<html>
+    <head>
+        <title>D3 Demo 1</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+
+        <style>
+
+        body {text-align: center}        
+
+        </style>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script src="https://unpkg.com/interactjs/dist/interact.min.js"></script>
+
+
+        <!-- JavaScript Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+        <!-- CSS only -->
+        
+    </head>
+    <style>
+     
+.searchgene {
+
+    padding: 20px;
+
+}  
+
+
+
+    </style>
+    
+    <body>
+        <g id='wholeScreen' style="position: relative;">
+        <!-- <h1>DEMO 1</h1> -->
+        
+        <h1>Gene Density Browser</h1>
+        <p>This is a gene density browser.This is a gene density browser.This is a gene density browser.This is a gene density browser.This is a gene density browser.This is a gene density browser.This is a gene density browser.This is a gene density browser.This is a gene density browser.This is a gene density browser.</p>
+        <div class="slidecontainer">
+            <p><strong>Choose Window Size</strong></p>
+            <input type="range" min="5000" max="200000" value="100000" class="windowSlider" id="myRange">
+
+            <p id="range"></p>
+        </div>
+        <div class = "searchgene text-center d-flex justify-content-center"  id = "searchPanel">
+
+            <div class="input-group  w-50 " id="input-panel">
+                <input type="search" id="geneToSearch" class="form-control rounded" placeholder="Search by Gene Name" aria-label="Search" aria-describedby="search-addon" />
+                <button type="button" id="geneSearchButton" class="btn btn-outline-primary">search</button>
+              </div>
+
+             
+
+    </div>
+    <div id="homolog-panel" class="text-center d-flex justify-content-center form-check">
+
+    </div>
+        <script  src = "index.js"></script>
+        <script type="module" src = "process_collinearity.js"></script>
+        
+
+        <!-- <div  id= "svgShower"></div> -->
+    </g> 
+    </body>  
+  
+
+
+    
+        
+    
+</html>
