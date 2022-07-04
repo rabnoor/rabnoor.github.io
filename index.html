@@ -1,11 +1,11 @@
 <html>
     <head>
-        <title>D3 Demo 1</title>
+        <title>Gene Density Browser</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 
         <style>
 
-        body {text-align: center}        
+       
 
         </style>
         <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -33,9 +33,9 @@
         <g id='wholeScreen' style="position: relative;">
         <!-- <h1>DEMO 1</h1> -->
         
-        <h1>Gene Density Browser</h1>
+        <h1 class ="text-center" >Gene Density Browser</h1>
         <p>This is a gene density browser.This is a gene density browser.This is a gene density browser.This is a gene density browser.This is a gene density browser.This is a gene density browser.This is a gene density browser.This is a gene density browser.This is a gene density browser.This is a gene density browser.</p>
-        <div class="slidecontainer">
+        <div class="slidecontainer text-center">
             <p><strong>Choose Window Size</strong></p>
             <input type="range" min="5000" max="200000" value="100000" class="windowSlider" id="myRange">
 
@@ -55,7 +55,7 @@
 
     </div>
         <script  src = "index.js"></script>
-        <script type="module" src = "process_collinearity.js"></script>
+        <script src = "process_collinearity.js"></script>
         
 
         <!-- <div  id= "svgShower"></div> -->

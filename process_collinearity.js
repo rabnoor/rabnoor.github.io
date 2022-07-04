@@ -92,7 +92,9 @@ function pullGeneInfo(){
 
 function showData(){
     window.orthologs =  trueMatch;
- 
+    
+
+
 }
 
 pullGeneInfo();
