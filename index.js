@@ -206,7 +206,7 @@ function generateVisualization() {
     }
 
     for ( let chromosome of Object.keys(chromDrawarray)){
-        // console.log(chromosome)
+
     var currentSVG = document.getElementById(chromosome)
     var chromeStart = currentSVG.getBoundingClientRect().left;
     var chromeWidth  = currentSVG.getBoundingClientRect().width;
@@ -266,7 +266,7 @@ function makeBigChrom(chromosome, chromDrawarray, colorScale, chromosomeSorted, 
     var min = Math.min.apply(null, chromDrawarray[chromosome]);
 
 
-    // console.log(colorMap[chromosome])
+
         
     colorScale = d3.scaleLinear()
     .domain([min,max])
@@ -416,7 +416,7 @@ function makeChromPortion(chromosome, chromDrawarray, colorScale, chromosomeSort
 
 
     var num  = Math.floor((upperLimit - currentBase)/5*windWidth)
-    // console.log(num)
+
     var PopulationData = makePopulationData(requiredGenes, 5*windWidth)
 
     var reqData = PopulationData[chromosome]
@@ -539,7 +539,7 @@ function makeGenemap(chromosome, chromDrawarray, colorScale, chromosomeSorted, i
 
             .append("svg:title")
             .text(function(d, i) { 
-                console.log(corresPondingGene[i])
+
                 return `${corresPondingGene[i]}`; })
             
 
@@ -565,12 +565,12 @@ function sliderToIndex(x, chartScale) {
 
 function searchGene(geneSearched, chromDrawarray, colorScale, chromosomeSorted, slider){
 
-    console.log(geneSearched)
+
 
     d3.select('#orthologToggler').remove();
 
     var allOrthologs = getOrthologs(geneSearched)
-    console.log(allOrthologs)
+
     makeMarkers(allOrthologs, chromosomeSorted, geneSearched)
     var counter  = 0;
     
@@ -619,7 +619,7 @@ function  findGene(geneSearched) {
 
     for ( let entry of dataset){
         if (entry.gene.toLowerCase() == geneSearched.toLowerCase()){
-            // console.log(entry)
+
             return entry;
         }
     }
@@ -759,7 +759,7 @@ function makeGenemapConditional(chromosome, chromDrawarray, colorScale, chromoso
             
             .on("click",function(d,i){
 
-                // console.log(this.id)
+
                 searchGene(this.id, chromDrawarray, colorScale, chromosomeSorted, slider);
 
             })
@@ -797,7 +797,7 @@ function makePopulationData(chromosomeSorted, num){
 
         var rangeCoord = Math.floor((upperLimit - currentBase)/num)
 
-        // console.log(rangeCoord)
+
 
         chromDrawarray[chromosome]  = new Array(rangeCoord+1).fill(0)
 
@@ -836,13 +836,13 @@ function getOrthologs(geneSearched){
 }
 
 function makeMarkers(orthologsArray, chromosomeSorted, geneSearched){
-    console.log(orthologsArray)
+
     var pathsToDraw = [];
 
 
     removeAll(".markergene")
     for ( let entry of orthologsArray){
-        console.log((entry))
+
         var gene = findGene(entry);
 
 
@@ -860,23 +860,24 @@ function makeMarkers(orthologsArray, chromosomeSorted, geneSearched){
         var markerPos = chromeStart + markerScale(gene.start);
 
         if(gene.chromosome.slice(0,1)=='D'){
-        console.log(entry)
+
         d3.select(`.genomeView`).append('div').attr("class", "markergene").attr("id",`marker${entry}`).attr("style",`position: absolute;width: 0px;height: 0px;top: 50px;cursor: pointer;opacity: 0.75;left: ${markerPos}; border-bottom: 16px solid orangered; border-left: 10px solid transparent; border-right: 10px solid transparent;`)
         }else{
-            console.log(entry)
+
         d3.select(`.genomeView2`).append('div').attr("class", "markergene").attr("id",`marker${entry}`).attr("style",`position: absolute;width: 0px;height: 0px;top: 50px;cursor: pointer;opacity: 0.75;left: ${markerPos}; border-bottom: 16px solid orangered; border-left: 10px solid transparent; border-right: 10px solid transparent;`)
         
         }
     }
-    console.log(`marker${geneSearched}`)
+    // https://stackoverflow.com/a/14988898
+
     var marker = document.getElementById(`marker${geneSearched}`);
-    var sourceGene = {x: getOffset(marker).left, y:getOffset(marker).top}
+    var sourceGene = {x: getOffset(marker).left+10, y:getOffset(marker).top+8}
     for ( let entry of orthologsArray.slice(1)){
         var marker = document.getElementById(`marker${entry}`);
-        pathsToDraw.push({source: sourceGene, target: {x: getOffset(marker).left, y:getOffset(marker).top }})
+        pathsToDraw.push({source: sourceGene, target: {x: getOffset(marker).left+10, y:getOffset(marker).top+8 }})
 
     }
-    console.log(pathsToDraw);
+
     makePath(pathsToDraw);
 
 }
@@ -885,8 +886,8 @@ function makeMarkers(orthologsArray, chromosomeSorted, geneSearched){
 function getOffset(el) {
     const rect = el.getBoundingClientRect();
     return {
-      left: rect.left,
-      top: rect.top
+      left: rect.left + window.scrollX,
+      top: rect.top + window.scrollY
     };
   }
 
@@ -946,15 +947,23 @@ function bringFirst(data,toBring){
 
 function makePath(pathsToDraw){
 
-    const d = {source : {x: 0, y: 0}, target: {x: 70, y: 70}}
-
-    d3.select('#wholeScreen').append("div").attr("id", "paths").attr("style",`position: absolute; top: 377.9305877685547; left: 12.1875`)
-    var windHeight = window.innerHeight;
-    var screenSVG = d3.select('#paths').append("svg").attr("id","pathsvg").attr("style",`position: relative; top:0; left:0;`)
+    let sourceGene = pathsToDraw[0]["source"]
+    d3.select('#wholeScreen').append("div").attr("id", "paths").attr("style",`position: absolute; top: ${sourceGene["y"]}; left: ${sourceGene["x"]};  width: 100%; height:auto`)
+    let screenSVG = d3.select('#paths').append("svg").attr("style",`position: relative; top:0; left:0;width: 100%; height:auto`)
+    for (let pair of pathsToDraw){
     
+    
+    // screenSVG.append("path")
+    //         .attr('d', createLinkLinePath({source: {x: 0, y: 0}, target: {x: pair["target"]["x"]-sourceGene["x"], y: pair["target"]["y"]-sourceGene["y"] }}));
 
-    screenSVG.append("path")
-            .attr('d', createLinkLinePath(d));
 
+    screenSVG.append("line")
+    .attr("x1",0)
+    .attr("x2",pair["target"]["x"]-sourceGene["x"])
+    .attr("y1",0)
+    .attr("y2",pair["target"]["y"]-sourceGene["y"])
+    .attr("style", "stroke:rgb(255,0,0);stroke-width:2")
+
+}
 
 }
