@@ -870,6 +870,8 @@ function makeMarkers(orthologsArray, chromosomeSorted, geneSearched){
     }
     // https://stackoverflow.com/a/14988898
 
+    if (orthologsArray.length > 1){
+
     var marker = document.getElementById(`marker${geneSearched}`);
     var sourceGene = {x: getOffset(marker).left+10, y:getOffset(marker).top+8}
     for ( let entry of orthologsArray.slice(1)){
@@ -879,7 +881,7 @@ function makeMarkers(orthologsArray, chromosomeSorted, geneSearched){
     }
 
     makePath(pathsToDraw);
-
+}
 }
 
 
