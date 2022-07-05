@@ -11,7 +11,7 @@ var slideWidth = 200; // default window width for chromosome view
 
 var orthologs = window.orthologs;   //trueMatch made by the collinearity script
 
-window.onresize = function () { location.reload() }
+// window.onresize = function () { location.reload() }
 
 
 
@@ -131,10 +131,7 @@ function generateVisualization() {
 
         var svg = d3.select(".genomeView").append("svg").attr("width", w).attr("height", h).attr("id",chromosome).on("click",function(){
 
-            makeBigChrom(this.id, chromDrawarray, d3.scaleLinear()
-            .domain([min,max])
-        
-            .range(["white", colorMap[this.id]]),chromosomeSorted, slider);
+            makeBigChrom(this.id, chromDrawarray,chromosomeSorted, slider);
             toMake = this.id
         })
         
@@ -186,10 +183,7 @@ function generateVisualization() {
 
         var svg = d3.select(".genomeView2").append("svg").attr("width", w).attr("height", h).attr("id",chromosome).on("click",function(){
 
-            makeBigChrom(this.id, chromDrawarray, d3.scaleLinear()
-            .domain([min,max])
-        
-            .range(["white", colorMap[this.id]]),chromosomeSorted, slider);
+            makeBigChrom(this.id, chromDrawarray, chromosomeSorted, slider);
             toMake = this.id
         })
         svg.chrom = chromosome;
@@ -205,6 +199,7 @@ function generateVisualization() {
             
     }
 
+    //Appending chromosome names to genome view
     for ( let chromosome of Object.keys(chromDrawarray)){
 
     var currentSVG = document.getElementById(chromosome)
@@ -220,14 +215,11 @@ function generateVisualization() {
     }
 
 
+    //making chromosome view
+    makeBigChrom(toMake, chromDrawarray,  chromosomeSorted, slider)
 
 
-
-
-    makeBigChrom(toMake, chromDrawarray, d3.scaleLinear()
-    .domain([min,max])
-
-    .range(["white", colorMap[toMake]]), chromosomeSorted, slider)
+    //Check for gene searched
     var geneSearched = document.getElementById("geneToSearch");
     var button = document.getElementById("geneSearchButton")
     button.onclick = function(){
@@ -236,16 +228,14 @@ function generateVisualization() {
         searchGene(geneSearched.value, chromDrawarray, colorScale, chromosomeSorted, slider)
     }
 
-    
-    
 
 }
     
 
     
 
-
-function makeBigChrom(chromosome, chromDrawarray, colorScale, chromosomeSorted, slider){
+//make chromosome  view
+function makeBigChrom(chromosome, chromDrawarray, chromosomeSorted, slider){
     d3.select('.chromosomePortion').remove();
     d3.select('.chromosomeShower').remove();
 
@@ -258,10 +248,11 @@ function makeBigChrom(chromosome, chromDrawarray, colorScale, chromosomeSorted, 
     var dataChrom = Object.values(chromosomeSorted[chromosome])
     var m = [].concat.apply([], dataChrom);
 
-        
+    //Finding start and end coordinates of the chromosome 
     var upper = (Math.max.apply(null, m));
     var lower = (Math.min.apply(null, m));
 
+    //Finding most and least populated window of chromosome
     var max = Math.max.apply(null, chromDrawarray[chromosome]);
     var min = Math.min.apply(null, chromDrawarray[chromosome]);
 
@@ -274,6 +265,8 @@ function makeBigChrom(chromosome, chromDrawarray, colorScale, chromosomeSorted, 
     .range(["white", colorMap[chromosome]]);
 
     makeMap(chromDrawarray[chromosome], windWidth, chromosome,svg2,colorScale,75, true, chromosomeSorted, lower, upper);
+
+
 
     makeChromPortion(chromosome, chromDrawarray, colorScale, chromosomeSorted, sliderToIndex(0, d3.scaleLinear()
             .domain([0, (chromDrawarray[toMake]).length - 1])
@@ -571,7 +564,7 @@ function searchGene(geneSearched, chromDrawarray, colorScale, chromosomeSorted, 
 
     var allOrthologs = getOrthologs(geneSearched)
 
-    makeMarkers(allOrthologs, chromosomeSorted, geneSearched)
+    
     var counter  = 0;
     
     if (allOrthologs.length>1){
@@ -612,6 +605,8 @@ function searchGene(geneSearched, chromDrawarray, colorScale, chromosomeSorted, 
         }
     }
     }
+
+    makeMarkers(allOrthologs, chromosomeSorted, geneSearched, chromDrawarray)
 }
 
 function  findGene(geneSearched) {
@@ -631,7 +626,7 @@ function focusedGene(geneSearched, chromDrawarray, colorScale, chromosomeSorted,
     var start = gene.start;
     var end = gene.end;
 
-    makeBigChrom(chromosome, chromDrawarray, colorScale, chromosomeSorted, slider)
+    makeBigChrom(chromosome, chromDrawarray, chromosomeSorted, slider)
     var element = document.getElementById("slidingWindow")
     var slideWidth = parseInt(element.style.width)
 
@@ -835,7 +830,10 @@ function getOrthologs(geneSearched){
     return data;
 }
 
-function makeMarkers(orthologsArray, chromosomeSorted, geneSearched){
+function makeMarkers(orthologsArray, chromosomeSorted, geneSearched, chromDrawarray){
+    var gene = findGene(geneSearched);
+    var chromosome = gene.chromosome;
+    var geneStart = gene.start;
 
     var pathsToDraw = [];
 
@@ -873,14 +871,14 @@ function makeMarkers(orthologsArray, chromosomeSorted, geneSearched){
     if (orthologsArray.length > 1){
 
     var marker = document.getElementById(`marker${geneSearched}`);
-    var sourceGene = {x: getOffset(marker).left+10, y:getOffset(marker).top+8}
+    var sourceGene = {x: getOffset(marker).left+10, y:getOffset(marker).top}
     for ( let entry of orthologsArray.slice(1)){
         var marker = document.getElementById(`marker${entry}`);
-        pathsToDraw.push({source: sourceGene, target: {x: getOffset(marker).left+10, y:getOffset(marker).top+8 }})
+        pathsToDraw.push({source: sourceGene, target: {x: getOffset(marker).left+10, y:getOffset(marker).top}})
 
     }
 
-    makePath(pathsToDraw);
+    makePath(pathsToDraw, chromDrawarray, geneStart, chromosome, geneSearched);
 }
 }
 
@@ -940,32 +938,80 @@ function createLinkLinePath(d) {
 
 
 
-
+//Bring item to the 0th index in array
 function bringFirst(data,toBring){
     data = data.filter(item => item !== toBring);
     data.unshift(toBring);
     }
 
+//Draw paths between orthologs
+function makePath(pathsToDraw, chromDrawarray, geneStart, chromosome, geneSearched){
+    let slider = document.getElementById("myRange");
 
-function makePath(pathsToDraw){
-
+    console.log(pathsToDraw)
     let sourceGene = pathsToDraw[0]["source"]
-    d3.select('#wholeScreen').append("div").attr("id", "paths").attr("style",`position: absolute; top: ${sourceGene["y"]}; left: ${sourceGene["x"]};  width: 100%; height:auto`)
-    let screenSVG = d3.select('#paths').append("svg").attr("style",`position: relative; top:0; left:0;width: 100%; height:auto`)
+    d3.select('#wholeScreen').append("div").attr("id", "paths").attr("style",`position: absolute; top: 0; left: 0;  width: 100%; height:100%`)
+    let screenSVG = d3.select('#paths').append("svg").attr("style",`position: relative; top:0; left:0;width: 100%; height:100%`)
+
+    
+    var data = chromDrawarray[chromosome];
+    var data_length = data.length;
+
+    var xScale = d3.scaleLinear()
+            .domain([0, data_length - 1])
+            .range([0, windWidth]);
+
+
+    let GenePosView2 = xScale(geneStart/slider.value);
+
+    let slidingWindowY = getOffset(document.getElementById("slidingWindow")).top;
+
+
     for (let pair of pathsToDraw){
     
+
+    screenSVG.append("line")
+    .attr("x1",sourceGene["x"])
+    .attr("x2",pair["target"]["x"])
+    .attr("y1",sourceGene["y"])
+    .attr("y2",pair["target"]["y"])
+    .attr("style", "stroke:rgb(255,0,0);stroke-width:2")
+
     
-    // screenSVG.append("path")
-    //         .attr('d', createLinkLinePath({source: {x: 0, y: 0}, target: {x: pair["target"]["x"]-sourceGene["x"], y: pair["target"]["y"]-sourceGene["y"] }}));
+
+    screenSVG.append("line")
+    .attr("x1",pair["target"]["x"])
+    .attr("x2",GenePosView2)
+    .attr("y1",pair["target"]["y"])
+    .attr("y2",slidingWindowY + parseFloat(document.getElementById("slidingWindow").style.height)/2)
+    .attr("style", "stroke:rgb(255,0,0);stroke-width:2")
+
+
+}
+
+    let GeneSelectorX = getOffset(document.getElementById("geneSelector")).left+10;
+    let GeneSelectorY = getOffset(document.getElementById("geneSelector")).top;
+
+    screenSVG.append("line")
+    .attr("x1",GenePosView2)
+    .attr("x2",GeneSelectorX)
+    .attr("y1",slidingWindowY + parseFloat(document.getElementById("slidingWindow").style.height)/2)
+    .attr("y2",GeneSelectorY)
+    .attr("style", "stroke:rgb(255,0,0);stroke-width:2")
+
+    
+
+    let GeneDrawn = document.getElementById(geneSearched);
+
+    let GeneDrawnX = getOffset(GeneDrawn).left + parseFloat(GeneDrawn.getBoundingClientRect().width)/2;
+    let GeneDrawnY = getOffset(GeneDrawn).top ;
 
 
     screenSVG.append("line")
-    .attr("x1",0)
-    .attr("x2",pair["target"]["x"]-sourceGene["x"])
-    .attr("y1",0)
-    .attr("y2",pair["target"]["y"]-sourceGene["y"])
+    .attr("x1",GeneDrawnX)
+    .attr("x2",GeneSelectorX)
+    .attr("y1",GeneDrawnY)
+    .attr("y2",GeneSelectorY)
     .attr("style", "stroke:rgb(255,0,0);stroke-width:2")
-
-}
 
 }
