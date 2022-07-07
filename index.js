@@ -11,7 +11,7 @@ var slideWidth = 200; // default window width for chromosome view
 
 var orthologs = window.orthologs;   //trueMatch made by the collinearity script
 
-// window.onresize = function () { location.reload() }
+window.onresize = function () { location.reload() }
 
 
 
@@ -866,7 +866,7 @@ function makeMarkers(orthologsArray, chromosomeSorted, geneSearched, chromDrawar
         
         }
     }
-    // https://stackoverflow.com/a/14988898
+
 
     if (orthologsArray.length > 1){
 
@@ -946,11 +946,21 @@ function bringFirst(data,toBring){
 
 //Draw paths between orthologs
 function makePath(pathsToDraw, chromDrawarray, geneStart, chromosome, geneSearched){
+
+
+        
+    
+
+
+
     let slider = document.getElementById("myRange");
 
     console.log(pathsToDraw)
     let sourceGene = pathsToDraw[0]["source"]
     d3.select('#wholeScreen').append("div").attr("id", "paths").attr("style",`position: absolute; top: 0; left: 0;  width: 100%; height:100%`)
+
+
+
     let screenSVG = d3.select('#paths').append("svg").attr("style",`position: relative; top:0; left:0;width: 100%; height:100%`)
 
     
@@ -1013,5 +1023,17 @@ function makePath(pathsToDraw, chromDrawarray, geneStart, chromosome, geneSearch
     .attr("y1",GeneDrawnY)
     .attr("y2",GeneSelectorY)
     .attr("style", "stroke:rgb(255,0,0);stroke-width:2")
+
+
+    var el = document.getElementById("paths")
+        el.innerHTML += '<button type="button" id="clearPath" class="btn btn-outline-primary">Clear paths</button>'
+
+    
+
+    var clearP = document.getElementById("clearPath")
+
+    clearP.onclick = function(){
+        removeAll("#paths")
+    }
 
 }
