@@ -94,7 +94,6 @@ function showData(){
     window.orthologs =  trueMatch;
     
 
-
 }
 
 pullGeneInfo();
